@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@keyframes glowAnimation {
+  0% {
+    text-shadow:
+      0 0 5px #fff,
+      0 0 10px #fff,
+      0 0 15px #fcca4e,
+      /* Dark Yellow */ 0 0 20px #fcca4e; /* Dark Yellow */
+    color: #fcca4e; /* Dark Yellow */
+  }
+  50% {
+    text-shadow:
+      0 0 5px #fff,
+      0 0 10px #fff,
+      0 0 15px #ffffff,
+      /* White */ 0 0 20px #ffffff; /* White */
+    color: #ffffff; /* White */
+  }
+  100% {
+    text-shadow:
+      0 0 5px #fff,
+      0 0 10px #fff,
+      0 0 15px #fcca4e,
+      /* Dark Yellow */ 0 0 20px #fcca4e; /* Dark Yellow */
+    color: #fcca4e; /* Dark Yellow */
+  }
+}
+
+/* Apply the glow animation */
+.team-member {
+  animation: glowAnimation 2s ease-in-out infinite;
+}
