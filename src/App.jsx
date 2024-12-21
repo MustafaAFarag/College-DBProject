@@ -1,6 +1,7 @@
 import Attributes from "./ui/Attributes";
 import ERD from "./ui/ERD";
 import Header from "./ui/Header";
+import Implemention from "./ui/Implemention";
 
 export default function App() {
   return (
@@ -8,6 +9,7 @@ export default function App() {
       <Header />
       <ERD />
       <Attributes />
+      <Implemention />
     </div>
   );
 }
