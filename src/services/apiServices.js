@@ -54,3 +54,14 @@ export async function createAppointment(appointmentData) {
 
   return data;
 }
+
+export async function getBills() {
+  const { data, error } = await supabase.from("bill").select("*");
+
+  if (error) {
+    console.error(error);
+    throw new Error("An error occurred while fetching patients");
+  }
+
+  return data;
+}

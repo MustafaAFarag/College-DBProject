@@ -1,15 +1,13 @@
-import { useState, useEffect } from "react";
 import {
   getAppointments,
   getDoctors,
   getPatients,
   createAppointment,
 } from "../services/apiServices";
+import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 
 export default function AppointmentRecords() {
-  const [appointments, setAppointments] = useState([]);
-  const [doctors, setDoctors] = useState([]);
-  const [patients, setPatients] = useState([]);
   const [formData, setFormData] = useState({
     patientid: "",
     doctorid: "",
@@ -18,38 +16,20 @@ export default function AppointmentRecords() {
     status: "Scheduled", // Default status
   });
 
-  useEffect(() => {
-    const fetchAppointmentsData = async () => {
-      try {
-        const data = await getAppointments();
-        setAppointments(data);
-      } catch (error) {
-        console.error("Error fetching appointments:", error.message);
-      }
-    };
+  const { data: appointments = [], isError: isAppointmentsError } = useQuery({
+    queryKey: ["appointments"],
+    queryFn: getAppointments,
+  });
 
-    const fetchDoctorsData = async () => {
-      try {
-        const data = await getDoctors();
-        setDoctors(data);
-      } catch (error) {
-        console.error("Error fetching doctors:", error.message);
-      }
-    };
+  const { data: doctors = [], isError: isDoctorsError } = useQuery({
+    queryKey: ["doctors"],
+    queryFn: getDoctors,
+  });
 
-    const fetchPatientsData = async () => {
-      try {
-        const data = await getPatients();
-        setPatients(data);
-      } catch (error) {
-        console.error("Error fetching patients:", error.message);
-      }
-    };
-
-    fetchAppointmentsData();
-    fetchDoctorsData();
-    fetchPatientsData();
-  }, []);
+  const { data: patients = [], isError: isPatientsError } = useQuery({
+    queryKey: ["patients"],
+    queryFn: getPatients,
+  });
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -59,13 +39,16 @@ export default function AppointmentRecords() {
     }));
   };
 
+  if (isDoctorsError || isPatientsError) {
+    return <div>ERROR CONNECTING TO SUPABASE</div>;
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
-      const newAppointment = await createAppointment(formData);
-      console.log("New Appointment Created:", newAppointment);
+      await createAppointment(formData);
 
+      // Reset form after submission
       setFormData({
         patientid: "",
         doctorid: "",
@@ -73,10 +56,6 @@ export default function AppointmentRecords() {
         appointmenttime: "",
         status: "Scheduled",
       });
-
-      // Refetch appointments to include the new one
-      const updatedAppointments = await getAppointments();
-      setAppointments(updatedAppointments);
     } catch (error) {
       console.error("Error creating appointment:", error.message);
     }
@@ -84,10 +63,11 @@ export default function AppointmentRecords() {
 
   return (
     <div className="flex justify-between">
-      {/* Left Side: Appointment Table */}
       <div className="w-1/2 p-4">
         <h3 className="text-xl font-semibold text-white mb-4">Appointments</h3>
-        {appointments.length > 0 ? (
+        {isAppointmentsError ? (
+          <p className="text-red-500">Error fetching appointments.</p>
+        ) : (
           <table className="min-w-full table-auto border-collapse border border-gray-300 bg-gray-800">
             <thead>
               <tr>
@@ -109,32 +89,39 @@ export default function AppointmentRecords() {
               </tr>
             </thead>
             <tbody>
-              {appointments.map((appointment) => (
-                <tr
-                  key={appointment.id}
-                  className="hover:bg-gray-400 text-white"
-                >
-                  <td className="px-4 py-2 border-b">
-                    {appointment.patientid}
-                  </td>
-                  <td className="px-4 py-2 border-b">{appointment.doctorid}</td>
-                  <td className="px-4 py-2 border-b">
-                    {appointment.appointmentdate}
-                  </td>
-                  <td className="px-4 py-2 border-b">
-                    {appointment.appointmenttime}
-                  </td>
-                  <td className="px-4 py-2 border-b">{appointment.status}</td>
-                </tr>
-              ))}
+              {appointments.map((appointment) => {
+                const patient = patients.find(
+                  (p) => p.id === appointment.patientid
+                );
+                const doctor = doctors.find(
+                  (d) => d.id === appointment.doctorid
+                );
+
+                return (
+                  <tr
+                    key={appointment.id}
+                    className="hover:bg-gray-400 text-white"
+                  >
+                    <td className="px-4 py-2 border-b">
+                      {patient ? patient.name : "Unknown Patient"}
+                    </td>
+                    <td className="px-4 py-2 border-b">
+                      {doctor ? doctor.name : "Unknown Doctor"}
+                    </td>
+                    <td className="px-4 py-2 border-b">
+                      {appointment.appointmentdate}
+                    </td>
+                    <td className="px-4 py-2 border-b">
+                      {appointment.appointmenttime}
+                    </td>
+                    <td className="px-4 py-2 border-b">{appointment.status}</td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
-        ) : (
-          <p className="text-gray-500 text-center">No appointments found.</p>
         )}
       </div>
-
-      {/* Right Side: Appointment Form */}
       <div className="w-1/2 p-4">
         <h3 className="text-xl font-semibold text-white mb-4">
           Add Appointment

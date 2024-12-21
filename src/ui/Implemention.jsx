@@ -1,4 +1,5 @@
 import AppointmentRecords from "../Implemention/AppointmentRecords";
+import BillEditing from "../Implemention/BillEditing";
 import PatientRecords from "../Implemention/PatientRecords";
 
 export default function Implementation() {
@@ -9,6 +10,7 @@ export default function Implementation() {
       </h2>
       <PatientRecords />
       <AppointmentRecords />
+      <BillEditing />
     </div>
   );
 }

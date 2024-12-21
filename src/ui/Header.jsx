@@ -1,4 +1,7 @@
 import batImage from "../assets/bat.png";
+import ghostImage from "../assets/ghost.png";
+import spiderwebImageleft from "../assets/spiderweb.png";
+import spiderwebImageRight from "../assets/spider-web.png";
 
 export default function Header() {
   return (
@@ -7,14 +10,28 @@ export default function Header() {
         Database Project
       </p>
 
-      <p className="text-xl mb-6">Under Supervision: Amany Ahmed</p>
+      <p className="text-xl mb-6">Under Supervision: Eng Amany Ahmed</p>
 
       <img
         src={batImage}
         alt="Bat"
         className="w-32 h-32 mx-auto absolute right-[38rem] top-2"
       />
-      <img />
+      <img
+        src={ghostImage}
+        alt="Bat"
+        className="w-32 h-32 mx-auto absolute left-[38rem] top-2"
+      />
+      <img
+        src={spiderwebImageleft}
+        alt="Bat"
+        className="w-32 h-32 mx-auto absolute left-0 top-0"
+      />
+      <img
+        src={spiderwebImageRight}
+        alt="Bat"
+        className="w-32 h-32 mx-auto absolute right-0 top-0"
+      />
 
       <div className="flex justify-center gap-12 text-lg font-medium">
         <p className="team-member">Mohamed Samir</p>
