@@ -4,16 +4,18 @@ import {
   getPatients,
   createAppointment,
 } from "../services/apiServices";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 
 export default function AppointmentRecords() {
+  const queryClient = useQueryClient();
+
   const [formData, setFormData] = useState({
     patientid: "",
     doctorid: "",
     appointmentdate: "",
     appointmenttime: "",
-    status: "Scheduled", // Default status
+    status: "Scheduled",
   });
 
   const { data: appointments = [], isError: isAppointmentsError } = useQuery({
@@ -39,10 +41,6 @@ export default function AppointmentRecords() {
     }));
   };
 
-  if (isDoctorsError || isPatientsError) {
-    return <div>ERROR CONNECTING TO SUPABASE</div>;
-  }
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -56,10 +54,17 @@ export default function AppointmentRecords() {
         appointmenttime: "",
         status: "Scheduled",
       });
+
+      // Invalidate query to refresh appointments
+      queryClient.invalidateQueries(["appointments"]);
     } catch (error) {
       console.error("Error creating appointment:", error.message);
     }
   };
+
+  if (isDoctorsError || isPatientsError) {
+    return <div>ERROR CONNECTING TO SUPABASE</div>;
+  }
 
   return (
     <div className="flex justify-between">
