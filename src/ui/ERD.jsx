@@ -2,7 +2,7 @@ import erd from "../assets/erd.jpeg";
 
 export default function ERD() {
   return (
-    <div className="p-8 text-white rounded-lg shadow-lg flex">
+    <div className="p-8 text-white rounded-lg  flex">
       {/* ERD Image */}
       <div className="mb-8 w-full max-w-4xl mr-8">
         <img
